@@ -65,6 +65,8 @@ const char* const GRBL_VERSION_BUILD = "20210226";
 
 #include "UserOutput.h"
 
+#include <Wire.h>  // Only needed for Arduino 1.6.5 and earlier
+
 // Do not guard this because it is needed for local files too
 #include "SDCard.h"
 
@@ -90,8 +92,9 @@ const char* const GRBL_VERSION_BUILD = "20210226";
 void grbl_init();
 void run_once();
 
-// Called if USE_MACHINE_INIT is defined
-void machine_init();
+
+void machine_init(); // weak definition in Grbl.cpp
+void display_init();  // weak definition in Grbl.cpp
 
 bool user_defined_homing(uint8_t cycle_mask);  // weak definition in Limits.cpp
 
