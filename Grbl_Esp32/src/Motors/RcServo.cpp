@@ -50,6 +50,7 @@ namespace Motors {
         ledcSetup(_channel_num, SERVO_PULSE_FREQ, SERVO_PULSE_RES_BITS);
         ledcAttachPin(_pwm_pin, _channel_num);
         _current_pwm_duty = 0;
+        _disabled         = false;
 
         config_message();
         startUpdateTask();
@@ -127,10 +128,14 @@ namespace Motors {
     }
 
     void RcServo::read_settings() {
-        _pwm_pulse_min = SERVO_MIN_PULSE * rc_servo_cal_min->get();
-        _pwm_pulse_max = SERVO_MAX_PULSE * rc_servo_cal_max->get();
+        if (bitnum_istrue(dir_invert_mask->get(), _axis_index)) {
+            // swap the pwm values
+            _pwm_pulse_min = SERVO_MAX_PULSE * (1.0 + (1.0 - rc_servo_cal_min->get()));
+            _pwm_pulse_max = SERVO_MIN_PULSE * (1.0 + (1.0 - rc_servo_cal_max->get()));
 
-        if (bitnum_istrue(dir_invert_mask->get(), _axis_index))  // normal direction
-            swap(_pwm_pulse_min, _pwm_pulse_max);
+        } else {
+            _pwm_pulse_min = SERVO_MIN_PULSE * rc_servo_cal_min->get();
+            _pwm_pulse_max = SERVO_MAX_PULSE * rc_servo_cal_max->get();
+        }
     }
 }
