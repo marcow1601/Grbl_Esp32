@@ -99,18 +99,18 @@ Socket #5
 
 */
 
-// Socket #1 (Empty)
-// Install StallGuard Jumpers
-#define X_LIMIT_PIN             GPIO_NUM_33  // Sg1
-#define Y_LIMIT_PIN             GPIO_NUM_32  // Sg2
-#define Z_LIMIT_PIN             GPIO_NUM_35  // Sg3
+// // Socket #1 (Empty)
+// // Install StallGuard Jumpers
+// #define X_LIMIT_PIN             GPIO_NUM_33  // Sg1
+// #define Y_LIMIT_PIN             GPIO_NUM_32  // Sg2
+// #define Z_LIMIT_PIN             GPIO_NUM_35  // Sg3
 
-// RS485 Modbus In socket #4
-// https://github.com/bdring/6-Pack_CNC_Controller/wiki/RS485-Modbus-Module
-#define SPINDLE_TYPE            SpindleType::HUANYANG // default, check actual $Spindle/Type Setting
-#define VFD_RS485_TXD_PIN        GPIO_NUM_14
-#define VFD_RS485_RTS_PIN        GPIO_NUM_13
-#define VFD_RS485_RXD_PIN        GPIO_NUM_15
+// // RS485 Modbus In socket #4
+// // https://github.com/bdring/6-Pack_CNC_Controller/wiki/RS485-Modbus-Module
+// #define SPINDLE_TYPE            SpindleType::HUANYANG // default, check actual $Spindle/Type Setting
+// #define VFD_RS485_TXD_PIN        GPIO_NUM_14
+// #define VFD_RS485_RTS_PIN        GPIO_NUM_13
+// #define VFD_RS485_RXD_PIN        GPIO_NUM_15
 
 // === Default settings
 #define DEFAULT_STEP_PULSE_MICROSECONDS I2S_OUT_USEC_PER_PULSE

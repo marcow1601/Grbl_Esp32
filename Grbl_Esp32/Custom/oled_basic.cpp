@@ -20,7 +20,15 @@
 
 	--------------------------------------------------------------
 
- 	This is a very basic test of adding a little OLED
+    This is a minimal implentation of a display as a test project.
+    It is designed to be used with a machine that has no easily accessible serial connection
+    It shows basic status and connection information.
+
+    When in alarm mode it will show the current Wifi/BT paramaters and status
+    Most machines will start in alarm mode (needs homing)
+    If the machine is running a job from SD it will show the progress
+    In other modes it will show state and 3 axis DROs
+    Thats All! 
 
     https://github.com/ThingPulse/esp8266-oled-ssd1306
 
@@ -76,7 +84,6 @@ String getStateText() {
             break;
         case State::Alarm:
             str = "Alarm: ";
-            str += String(static_cast<int>(sys_rt_exec_alarm));
             break;
         case State::CheckMode:
             str = "Check";
@@ -103,42 +110,56 @@ String getStateText() {
 }
 
 void displayRadioInfo() {
-    String wifi_info = "";
+    String radio_info = "";
     //     if (wifi_radio_mode->get() == ESP_BT) {
     // #ifdef ENABLE_BLUETOOTH
 
     // #endif
     //     } else {
 
+    const uint8_t row1 = 18;
+    const uint8_t row2 = 30;
+    const uint8_t row3 = 42;
+
     display.setTextAlignment(TEXT_ALIGN_LEFT);
     display.setFont(ArialMT_Plain_10);
 
-    enum_opt_t foo = wifi_radio_mode->get();
-
 #ifdef ENABLE_BLUETOOTH
-
+    if (WebUI::wifi_radio_mode->get() == ESP_BT) {
+        radio_info = String("Bluetooth: ") + WebUI::bt_name->get();
+        display.drawString(0, row1, radio_info);
+        radio_info = String("Status: ") + String(WebUI::SerialBT.hasClient() ? "Connected" : "Not connected");
+        display.drawString(0, row2, radio_info);
+    }
 #endif
 #ifdef ENABLE_WIFI
-        if ((WiFi.getMode() == WIFI_MODE_STA) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
-        wifi_info = "STA SSID: " + WiFi.SSID();
-        display.drawString(0, 18, wifi_info);
+    if ((WiFi.getMode() == WIFI_MODE_STA) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
+        radio_info = "STA SSID: " + WiFi.SSID();
+        display.drawString(0, row1, radio_info);
 
-        wifi_info = "IP: " + WiFi.localIP().toString();
-        display.drawString(0, 30, wifi_info);
+        radio_info = "IP: " + WiFi.localIP().toString();
+        display.drawString(0, row2, radio_info);
 
-        wifi_info = "Status: ";
-        (WiFi.status() == WL_CONNECTED) ? wifi_info += "Connected" : wifi_info += "Not connected";
-        display.drawString(0, 42, wifi_info);
+        radio_info = "Status: ";
+        (WiFi.status() == WL_CONNECTED) ? radio_info += "Connected" : radio_info += "Not connected";
+        display.drawString(0, row3, radio_info);
         //}
-    }
-    else if ((WiFi.getMode() == WIFI_MODE_AP) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
-        wifi_info = "AP SSID: Who knows?";
+    } else if ((WiFi.getMode() == WIFI_MODE_AP) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
+        radio_info = String("AP SSID: ") + WebUI::wifi_ap_ssid->get();
 
-        display.drawString(0, 30, wifi_info);
+        display.drawString(0, row1, radio_info);
 
-        wifi_info = "IP: " + WiFi.softAPIP().toString();
-        display.drawString(0, 47, wifi_info);
+        radio_info = "IP: " + WiFi.softAPIP().toString();
+        display.drawString(0, row2, radio_info);
     }
+#endif
+
+#ifdef WIFI_OR_BLUETOOTH
+    if (WebUI::wifi_radio_mode->get() == ESP_RADIO_OFF) {
+        display.drawString(0, row1, "Radio Mode: None");
+    }
+#else
+    display.drawString(0, row1, "Wifi and Bluetooth Disabled");
 #endif
 }
 
