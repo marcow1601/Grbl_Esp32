@@ -50,8 +50,7 @@ namespace Motors {
         ledcSetup(_channel_num, SERVO_PULSE_FREQ, SERVO_PULSE_RES_BITS);
         ledcAttachPin(_pwm_pin, _channel_num);
         _current_pwm_duty = 0;
-        _disabled         = false;
-
+        _disabled         = true;
         config_message();
         startUpdateTask();
     }
@@ -79,10 +78,6 @@ namespace Motors {
 
     // sets the PWM to zero. This allows most servos to be manually moved
     void RcServo::set_disable(bool disable) {
-        if (_disabled == disable) {
-            return;
-        }
-
         _disabled = disable;
         if (_disabled) {
             _write_pwm(0);
@@ -107,11 +102,6 @@ namespace Motors {
 
         if (_disabled)
             return;
-
-        if (sys.state == State::Alarm) {
-            set_disable(true);
-            return;
-        }
 
         read_settings();
 

@@ -102,6 +102,46 @@ String getStateText() {
     return str;
 }
 
+void displayRadioInfo() {
+    String wifi_info = "";
+    //     if (wifi_radio_mode->get() == ESP_BT) {
+    // #ifdef ENABLE_BLUETOOTH
+
+    // #endif
+    //     } else {
+
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.setFont(ArialMT_Plain_10);
+
+    enum_opt_t foo = wifi_radio_mode->get();
+
+#ifdef ENABLE_BLUETOOTH
+
+#endif
+#ifdef ENABLE_WIFI
+        if ((WiFi.getMode() == WIFI_MODE_STA) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
+        wifi_info = "STA SSID: " + WiFi.SSID();
+        display.drawString(0, 18, wifi_info);
+
+        wifi_info = "IP: " + WiFi.localIP().toString();
+        display.drawString(0, 30, wifi_info);
+
+        wifi_info = "Status: ";
+        (WiFi.status() == WL_CONNECTED) ? wifi_info += "Connected" : wifi_info += "Not connected";
+        display.drawString(0, 42, wifi_info);
+        //}
+    }
+    else if ((WiFi.getMode() == WIFI_MODE_AP) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
+        wifi_info = "AP SSID: Who knows?";
+
+        display.drawString(0, 30, wifi_info);
+
+        wifi_info = "IP: " + WiFi.softAPIP().toString();
+        display.drawString(0, 47, wifi_info);
+    }
+#endif
+}
+
 void displayDRO() {
     char axisVal[20];
 
@@ -126,7 +166,7 @@ void displayUpdate(void* pvParameters) {
     TickType_t       xLastWakeTime;
     const TickType_t xDisplayFrequency = 100;                  // in ticks (typically ms)
     xLastWakeTime                      = xTaskGetTickCount();  // Initialise the xLastWakeTime variable with the current time.
-    String wifi_info                   = "";
+
     vTaskDelay(2500);
     uint16_t sd_file_ticker = 0;
 
@@ -161,34 +201,12 @@ void displayUpdate(void* pvParameters) {
             display.setFont(ArialMT_Plain_16);
             display.setTextAlignment(TEXT_ALIGN_CENTER);
             display.drawString(64, 25, String(progress) + "%");
-            
+
         } else if (sys.state == State::Alarm) {
-            display.setTextAlignment(TEXT_ALIGN_LEFT);
-            display.setFont(ArialMT_Plain_10);
-
-            if ((WiFi.getMode() == WIFI_MODE_STA) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
-                wifi_info = "STA SSID: " + WiFi.SSID();
-                display.drawString(0, 18, wifi_info);
-
-                wifi_info = "IP: " + WiFi.localIP().toString();
-                display.drawString(0, 30, wifi_info);
-
-                wifi_info = "Status: ";
-                (WiFi.status() == WL_CONNECTED) ? wifi_info += "Connected" : wifi_info += "Not connected";
-                display.drawString(0, 42, wifi_info);
-            }
-        } else if ((WiFi.getMode() == WIFI_MODE_AP) || (WiFi.getMode() == WIFI_MODE_APSTA)) {
-            wifi_info = "AP SSID: Who knows?";
-
-            display.drawString(0, 30, wifi_info);
-
-            wifi_info = "IP: " + WiFi.softAPIP().toString();
-            display.drawString(0, 47, wifi_info);
-
+            displayRadioInfo();
         } else {
             displayDRO();
         }
-
         display.display();
 
         vTaskDelayUntil(&xLastWakeTime, xDisplayFrequency);
@@ -205,7 +223,7 @@ void display_init() {
 
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(ArialMT_Plain_16);
-    display.drawString(63, 0, MACHINE_NAME);   
+    display.drawString(63, 0, MACHINE_NAME);
 
     display.display();
 
