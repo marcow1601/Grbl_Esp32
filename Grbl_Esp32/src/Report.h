@@ -122,10 +122,13 @@ void report_machine_type(uint8_t client);
 void report_hex_msg(char* buf, const char* prefix, int len);
 void report_hex_msg(uint8_t* buf, const char* prefix, int len);
 
-char report_get_axis_letter(uint8_t axis);
-
+char  report_get_axis_letter(uint8_t axis);
 char* reportAxisLimitsMsg(uint8_t axis);
 char* reportAxisNameMsg(uint8_t axis);
 char* reportAxisNameMsg(uint8_t axis, uint8_t dual_axis);
 
 void reportTaskStackSize(UBaseType_t& saved);
+
+char*  report_state_text();
+float* get_wco();
+void   mpos_to_wpos(float* position);
